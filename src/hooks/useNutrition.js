@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../hooks/use-toast";
+import { getStartDateString } from "../utils/dateFilters";
 
 export function useNutrition(selectedDate = new Date().toISOString().split("T")[0]) {
     const { user } = useAuth();
@@ -113,7 +114,7 @@ export function useNutrition(selectedDate = new Date().toISOString().split("T")[
     };
 }
 
-export function useNutritionHistory() {
+export function useNutritionHistory(dateRange = "alltime") {
     const { user } = useAuth();
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -125,16 +126,21 @@ export function useNutritionHistory() {
             return;
         }
 
-        // Fetch last 30 days
-        const thirtyDaysAgo = new Date();
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        const dateString = thirtyDaysAgo.toISOString().split('T')[0];
+        let q;
+        const startDate = getStartDateString(dateRange);
 
-        const q = query(
-            collection(db, "nutrition_entries"),
-            where("user_id", "==", user.uid),
-            where("entry_date", ">=", dateString)
-        );
+        if (startDate) {
+            q = query(
+                collection(db, "nutrition_entries"),
+                where("user_id", "==", user.uid),
+                where("entry_date", ">=", startDate)
+            );
+        } else {
+            q = query(
+                collection(db, "nutrition_entries"),
+                where("user_id", "==", user.uid)
+            );
+        }
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const data = snapshot.docs.map(doc => ({

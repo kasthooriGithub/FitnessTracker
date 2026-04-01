@@ -483,6 +483,7 @@ h6 {
     margin-left: 0;
     padding-left: 0;
     padding-right: 0;
+    padding-bottom: calc(75px + env(safe-area-inset-bottom, 0px));
   }
 }
 

@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useDailyLogs } from "../hooks/useDailyLogs";
 import { useWorkouts } from "../hooks/useWorkouts";
 import { useNutritionHistory } from "../hooks/useNutrition";
+import { DateFilter } from "../components/DateFilter";
 import { Dumbbell, Footprints, Droplets, Scale, Flame, Activity, Clock, Calendar } from "lucide-react";
 import {
   LineChart,
@@ -20,17 +21,21 @@ import {
 } from "recharts";
 
 export default function History() {
-  const { logs, loading: logsLoading } = useDailyLogs();
-  const { workouts, loading: workoutsLoading } = useWorkouts();
-  const { history: nutritionHistory, loading: nutritionLoading } = useNutritionHistory();
-  const [dateRange, setDateRange] = useState("7days"); // today, 7days, 30days
+  const [dateRange, setDateRange] = useState("today"); 
+  const { logs, loading: logsLoading } = useDailyLogs(dateRange);
+  const { workouts, loading: workoutsLoading } = useWorkouts(dateRange);
+  const { history: nutritionHistory, loading: nutritionLoading } = useNutritionHistory(dateRange);
 
   // --- Filtering Logic ---
   const getDateThreshold = () => {
     const date = new Date();
-    if (dateRange === "today") return date; // Comparison will be exact match
+    date.setHours(0, 0, 0, 0); // Start of day for precise comparisons
+    if (dateRange === "today") return date;
     if (dateRange === "7days") date.setDate(date.getDate() - 7);
     if (dateRange === "30days") date.setDate(date.getDate() - 30);
+    if (dateRange === "3months") date.setDate(date.getDate() - 90);
+    if (dateRange === "1year") date.setDate(date.getDate() - 365);
+    if (dateRange === "alltime") return new Date(0); // The beginning of time
     return date;
   };
 
@@ -131,26 +136,7 @@ export default function History() {
           <p className="text-muted mb-0">Track your journey over time</p>
         </div>
 
-        <div className="btn-group bg-white shadow-sm rounded-3 p-1">
-          <button
-            className={`btn btn-sm rounded-2 fw-bold px-3 ${dateRange === 'today' ? 'btn-primary' : 'btn-light border-0 text-muted'}`}
-            onClick={() => setDateRange('today')}
-          >
-            Today
-          </button>
-          <button
-            className={`btn btn-sm rounded-2 fw-bold px-3 ${dateRange === '7days' ? 'btn-primary' : 'btn-light border-0 text-muted'}`}
-            onClick={() => setDateRange('7days')}
-          >
-            Last 7 Days
-          </button>
-          <button
-            className={`btn btn-sm rounded-2 fw-bold px-3 ${dateRange === '30days' ? 'btn-primary' : 'btn-light border-0 text-muted'}`}
-            onClick={() => setDateRange('30days')}
-          >
-            Last 30 Days
-          </button>
-        </div>
+        <DateFilter value={dateRange} onChange={setDateRange} />
       </div>
 
       {/* Stats Cards */}

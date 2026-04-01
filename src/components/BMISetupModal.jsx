@@ -58,7 +58,7 @@ export function BMISetupModal({ show, onHide, onSave, profile }) {
     };
 
     return (
-        <Modal show={show} onHide={onHide} centered backdrop="static" keyboard={false}>
+        <Modal show={show} onHide={onHide} centered backdrop="static" keyboard={false} fullscreen="md-down">
             <Modal.Header>
                 <Modal.Title className="fw-bold">Complete Your Profile</Modal.Title>
             </Modal.Header>

@@ -8,13 +8,13 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  doc,
-  orderBy
+  doc
 } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../hooks/use-toast";
+import { getStartDateString } from "../utils/dateFilters";
 
-export function useWorkouts() {
+export function useWorkouts(dateRange = "alltime") {
   const { user } = useAuth();
   const { toast } = useToast();
   const [workouts, setWorkouts] = useState([]);
@@ -27,17 +27,31 @@ export function useWorkouts() {
       return;
     }
 
-    const q = query(
-      collection(db, "workouts"),
-      where("user_id", "==", user.uid),
-      orderBy("workout_date", "desc")
-    );
+    let q;
+    const startDate = getStartDateString(dateRange);
+    
+    if (startDate) {
+       q = query(
+         collection(db, "workouts"),
+         where("user_id", "==", user.uid),
+         where("workout_date", ">=", startDate)
+       );
+    } else {
+       q = query(
+         collection(db, "workouts"),
+         where("user_id", "==", user.uid)
+       );
+    }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const workoutData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      // Client-side sort by date descending
+      workoutData.sort((a, b) => new Date(b.workout_date) - new Date(a.workout_date));
+
       setWorkouts(workoutData);
       setLoading(false);
     }, (error) => {

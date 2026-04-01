@@ -47,25 +47,25 @@ export default function Auth() {
     <div className="container-fluid p-0 min-vh-100 d-flex flex-column flex-lg-row">
       {/* Left side - Branding */}
       <div
-        className="flex-lg-grow-1 p-5 d-flex flex-column justify-content-center position-relative overflow-hidden text-white"
-        style={{ background: 'linear-gradient(135deg, rgb(19, 76, 156) 0%, rgb(8, 40, 95) 100%)' }}
+        className="flex-lg-grow-1 p-4 p-lg-5 d-flex flex-column justify-content-center position-relative overflow-hidden text-white"
+        style={{ background: 'linear-gradient(135deg, rgb(19, 76, 156) 0%, rgb(8, 40, 95) 100%)', flexShrink: 0 }}
       >
         <div
           className="position-absolute top-0 start-0 end-0 bottom-0 opacity-25"
           style={{ background: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.2), transparent 50%)' }}
         />
-        <div className="position-relative z-1 max-w-lg mx-auto mx-lg-0 ms-lg-5">
-          <div className="d-flex align-items-center gap-3 mb-4">
-            <div className="d-flex h-14 w-14 align-items-center justify-content-center rounded-4 bg-white bg-opacity-20 blur-sm">
-              <Activity className="h-8 w-8 text-dark" />
+        <div className="position-relative z-1 max-w-lg mx-auto mx-lg-0 ms-lg-5 text-center text-lg-start">
+          <div className="d-flex align-items-center justify-content-center justify-content-lg-start gap-3 mb-3 mb-lg-4">
+            <div className="d-flex h-12 w-12 align-items-center justify-content-center rounded-4 bg-white bg-opacity-20 blur-sm">
+              <Activity className="h-6 w-6 text-dark" />
             </div>
              
-            <span className="h2 fw-bold mb-0">FitTrack</span>
+            <span className="fs-2 fw-bold mb-0">FitTrack</span>
           </div>
-          <h1 className="display-4 fw-bold mb-4">
-            Your Personal<br />Fitness Journey<br />Starts Here
+          <h1 className="fs-1 fw-bold mb-3 mb-lg-4">
+            Your Personal<br className="d-none d-lg-block" /> Fitness Journey<br className="d-none d-lg-block" /> Starts Here
           </h1>
-          <p className="lead opacity-75 max-w-md">
+          <p className="lead opacity-75 max-w-md mx-auto mx-lg-0 fs-6">
             Track workouts, monitor progress, and achieve your health goals with our intuitive fitness companion.
           </p>
         </div>

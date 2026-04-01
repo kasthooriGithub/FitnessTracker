@@ -1,7 +1,8 @@
-import React from "react";
-import { Plus, Utensils, Coffee, Sun, Moon } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Utensils, Coffee, Sun, Moon, Trash2 } from "lucide-react";
 
-export function MealCard({ title, items, onAdd }) {
+export function MealCard({ title, items, onAdd, onDelete }) {
+    const [hoveredId, setHoveredId] = useState(null);
     const totalCal = items.reduce((sum, item) => sum + (Number(item.calories) || 0), 0);
 
     const getIcon = () => {
@@ -39,14 +40,31 @@ export function MealCard({ title, items, onAdd }) {
                 {items.length > 0 ? (
                     <div className="d-flex flex-column gap-3">
                         {items.map((item) => (
-                            <div key={item.id} className="nt-item d-flex justify-content-between align-items-center p-3 bg-light rounded-3 border-0">
+                            <div 
+                                key={item.id} 
+                                className="nt-item d-flex justify-content-between align-items-center p-3 bg-light rounded-3 border-0 transition-all"
+                                onMouseEnter={() => setHoveredId(item.id)}
+                                onMouseLeave={() => setHoveredId(null)}
+                            >
                                 <div>
-                                    <div className="nt-itemName fw-bold">{item.name}</div>
+                                    <div className="nt-itemName fw-bold text-dark">{item.name}</div>
                                     <div className="nt-itemSub text-muted small">{item.quantity}</div>
                                 </div>
-                                <div className="text-end">
-                                    <div className="nt-itemCal fw-bold">{item.calories} cal</div>
-                                    <div className="nt-itemMacro text-muted small">P: {item.protein}g</div>
+                                <div className="d-flex align-items-center gap-3">
+                                    <div className="text-end">
+                                        <div className="nt-itemCal fw-bold text-dark">{item.calories} cal</div>
+                                        <div className="nt-itemMacro text-muted small" style={{ fontSize: "0.8rem" }}>P: {item.protein}g</div>
+                                    </div>
+                                    {hoveredId === item.id && onDelete && (
+                                        <button 
+                                            className="btn btn-sm btn-link text-danger p-0 rounded-circle d-flex align-items-center justify-content-center bg-danger bg-opacity-10" 
+                                            onClick={() => onDelete(item.id)}
+                                            title="Delete item"
+                                            style={{ width: "32px", height: "32px" }}
+                                        >
+                                            <Trash2 size={16} strokeWidth={2.5} />
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

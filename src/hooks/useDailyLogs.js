@@ -8,14 +8,14 @@ import {
   setDoc,
   updateDoc,
   doc,
-  orderBy,
   getDocs,
   limit
 } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../hooks/use-toast";
+import { getStartDateString } from "../utils/dateFilters";
 
-export function useDailyLogs() {
+export function useDailyLogs(dateRange = "alltime") {
   const { user } = useAuth();
   const { toast } = useToast();
   const [todayLog, setTodayLog] = useState(null);
@@ -32,17 +32,31 @@ export function useDailyLogs() {
       return;
     }
 
-    const q = query(
-      collection(db, "daily_logs"),
-      where("user_id", "==", user.uid),
-      orderBy("log_date", "desc")
-    );
+    let q;
+    const startDate = getStartDateString(dateRange);
+    
+    if (startDate) {
+      q = query(
+        collection(db, "daily_logs"),
+        where("user_id", "==", user.uid),
+        where("log_date", ">=", startDate)
+      );
+    } else {
+      q = query(
+        collection(db, "daily_logs"),
+        where("user_id", "==", user.uid)
+      );
+    }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const logData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+      
+      // Client-side sort by date descending to not require custom Firebase composite index
+      logData.sort((a, b) => new Date(b.log_date) - new Date(a.log_date));
+
       setLogs(logData);
       setTodayLog(logData.find((log) => log.log_date === today) || null);
       setLoading(false);

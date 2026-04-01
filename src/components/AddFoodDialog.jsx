@@ -92,7 +92,7 @@ export function AddFoodDialog({ show, onHide, onSave, mealType }) {
 
     return (
         <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)", zIndex: 1050 }}>
-            <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-dialog modal-dialog-centered modal-fullscreen-md-down">
                 <div className="modal-content rounded-4 border-0 shadow">
                     <div className="modal-header border-0 pb-0">
                         <h5 className="modal-title fw-bold">Add to {mealType}</h5>

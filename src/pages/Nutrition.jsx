@@ -4,12 +4,14 @@ import { useProfile } from "../hooks/useProfile";
 import { MacroRing } from "../components/MacroRing";
 import { MealCard } from "../components/MealCard";
 import { AddFoodDialog } from "../components/AddFoodDialog";
+import { MealTemplatesModal } from "../components/MealTemplatesModal";
 import { Plus, Heart, Utensils, Activity, Loader2 } from "lucide-react";
 
 export default function Nutrition() {
     const { profile, loading: profileLoading } = useProfile();
-    const { meals, totals, loading: nutritionLoading, addEntry } = useNutrition();
+    const { meals, totals, loading: nutritionLoading, addEntry, deleteEntry } = useNutrition();
     const [showAddModal, setShowAddModal] = useState(false);
+    const [showTemplatesModal, setShowTemplatesModal] = useState(false);
     const [selectedMeal, setSelectedMeal] = useState("Breakfast");
 
     const calorieGoal = profile?.daily_calories_goal || 2000;
@@ -32,18 +34,21 @@ export default function Nutrition() {
     return (
         <div className="container py-4 py-lg-5" style={{ maxWidth: "1100px" }}>
             {/* Header section */}
-            <div className="nt-header d-flex justify-content-between align-items-start mb-4">
+            <div className="nt-header d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start mb-4 gap-3 gap-md-0">
                 <div>
                     <h1 className="nt-h1 fw-bold display-6 mb-1">Nutrition</h1>
-                    <p className="nt-sub text-muted">Track your meals and macros</p>
+                    <p className="nt-sub text-muted mb-0">Track your meals and macros</p>
                 </div>
-                <div className="nt-actions d-flex gap-2">
-                    <button className="btn btn-outline-secondary border-light-subtle rounded-3 px-3 py-2 fw-semibold d-flex align-items-center gap-2 bg-white shadow-sm">
+                <div className="nt-actions w-100 w-md-auto d-flex gap-2 justify-content-start justify-content-md-end" style={{ flex: '1 1 auto', maxWidth: '100%' }}>
+                    <button 
+                        className="btn btn-outline-secondary border-light-subtle rounded-3 px-3 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 bg-white shadow-sm flex-grow-1 flex-md-grow-0"
+                        onClick={() => setShowTemplatesModal(true)}
+                    >
                         <Heart size={18} />
                         Templates
                     </button>
                     <button
-                        className="btn btn-primary rounded-3 px-3 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm"
+                        className="btn btn-primary rounded-3 px-3 py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm flex-grow-1 flex-md-grow-0"
                         onClick={() => handleOpenAdd("Breakfast")}
                     >
                         <Plus size={20} />
@@ -77,7 +82,7 @@ export default function Nutrition() {
                     </div>
 
                     <div className="col-12 col-lg-5 mt-4 mt-lg-0">
-                        <div className="nt-summaryRight d-flex justify-content-between justify-content-lg-around">
+                        <div className="nt-summaryRight d-flex flex-wrap justify-content-center justify-content-sm-between justify-content-lg-around gap-3 gap-sm-0 text-center">
                             <MacroRing label="Protein" value={totals.protein} goal={proteinGoal} color="#0d6efd" />
                             <MacroRing label="Carbs" value={totals.carbs} goal={carbsGoal} color="#fd7e14" />
                             <MacroRing label="Fat" value={totals.fat} goal={fatGoal} color="#20c997" />
@@ -95,6 +100,7 @@ export default function Nutrition() {
                             title={mealType}
                             items={meals[mealType] || []}
                             onAdd={handleOpenAdd}
+                            onDelete={deleteEntry}
                         />
                     ))}
                 </div>
@@ -107,6 +113,11 @@ export default function Nutrition() {
                 onHide={() => setShowAddModal(false)}
                 onSave={handleAddSubmit}
                 mealType={selectedMeal}
+            />
+
+            <MealTemplatesModal 
+                show={showTemplatesModal} 
+                onHide={() => setShowTemplatesModal(false)} 
             />
         </div>
     );

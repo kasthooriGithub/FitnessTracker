@@ -85,8 +85,8 @@ export default function Navigation() {
 
       {/* Mobile bottom navigation */}
       <nav
-        className="position-fixed bottom-0 start-0 end-0 d-lg-none border-top bg-white bg-opacity-75 shadow-lg"
-        style={{ zIndex: 1000, backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+        className="position-fixed bottom-0 start-0 end-0 d-lg-none border-top bg-white bg-opacity-75 shadow-lg safe-area-pb"
+        style={{ zIndex: 1050, backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
       >
         <div className="d-flex align-items-center justify-content-around py-2 px-1">
           {navItems.map((item) => {
