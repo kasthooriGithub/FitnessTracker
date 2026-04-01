@@ -13,7 +13,7 @@ const navItems = [
   { path: "/profile", icon: User, label: "Profile" },
 ];
 
-export default function Navigation() {
+export default function DesktopNavigation() {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { profile } = useProfile();
@@ -26,7 +26,6 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Desktop sidebar */}
       <aside
         className="d-none d-lg-flex flex-column position-fixed top-0 bottom-0 start-0 border-end bg-white shadow-sm"
         style={{ width: "var(--sidebar-width, 264px)", zIndex: 1000 }}
@@ -83,34 +82,6 @@ export default function Navigation() {
         </div>
       </aside>
 
-      {/* Mobile bottom navigation */}
-      <nav
-        className="position-fixed bottom-0 start-0 end-0 d-lg-none border-top bg-white bg-opacity-75 shadow-lg safe-area-pb"
-        style={{ zIndex: 1050, backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
-      >
-        <div className="d-flex align-items-center justify-content-around py-2 px-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`d-flex flex-column align-items-center gap-1 px-3 py-1 rounded-3 text-decoration-none ${isActive ? "text-primary" : "text-muted"
-                  }`}
-              >
-                <div className={`p-2 rounded-3 ${isActive ? "bg-primary bg-opacity-10" : ""}`}>
-                  <item.icon className={`h-5 w-5 ${isActive ? "icon-scale" : ""}`} />
-                </div>
-                <span className="small fw-bold" style={{ fontSize: "0.7rem" }}>
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-
-      {/* Signout confirmation modal */}
       <ConfirmDialog
         open={showSignout}
         title="Sign out?"

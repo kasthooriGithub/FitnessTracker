@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
-import Navigation from "../components/Navigation";
+import DesktopNavigation from "../components/DesktopNavigation";
+import MobileBottomNav from "../components/MobileBottomNav";
 import { useAuth } from "../contexts/AuthContext";
 import { Activity } from "lucide-react";
 
@@ -23,11 +24,14 @@ const DashboardLayout = () => {
     }
 
     return (
-        <div className="min-vh-100 bg-light">
-            <Navigation />
-            <main className="main-content">
-                <Outlet />
-            </main>
+        <div className="min-vh-100 bg-light d-flex flex-column flex-lg-row">
+            <DesktopNavigation />
+            <div className="flex-grow-1 d-flex flex-column">
+                <main className="main-content flex-grow-1">
+                    <Outlet />
+                </main>
+                <MobileBottomNav />
+            </div>
         </div>
     );
 };

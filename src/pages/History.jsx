@@ -136,7 +136,9 @@ export default function History() {
           <p className="text-muted mb-0">Track your journey over time</p>
         </div>
 
-        <DateFilter value={dateRange} onChange={setDateRange} />
+        <div className="align-self-end ms-md-auto">
+          <DateFilter value={dateRange} onChange={setDateRange} />
+        </div>
       </div>
 
       {/* Stats Cards */}
