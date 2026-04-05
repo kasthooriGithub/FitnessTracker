@@ -9,7 +9,8 @@ import {
     deleteDoc,
     doc,
     serverTimestamp,
-    orderBy
+    orderBy,
+    updateDoc
 } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../hooks/use-toast";
@@ -98,10 +99,41 @@ export function useMealTemplates() {
     const deleteTemplate = async (id) => {
         try {
             await deleteDoc(doc(db, "meal_templates", id));
-            toast({ title: "Template deleted" });
+            toast({
+                description: "Template deleted successfully!",
+                });
         } catch (error) {
             toast({
                 title: "Error deleting template",
+                description: error.message,
+                variant: "destructive",
+            });
+        }
+    };
+
+    const updateTemplate = async (id, updatedData) => {
+        try {
+            await updateDoc(doc(db, "meal_templates", id), updatedData);
+            toast({
+                description: "Template synced successfully!",
+            });
+        } catch (error) {
+            toast({
+                title: "Error syncing template",
+                description: error.message,
+                variant: "destructive",
+            });
+        }
+    };
+
+    const toggleTemplateFavorite = async (id, currentStatus) => {
+        try {
+            await updateDoc(doc(db, "meal_templates", id), {
+                is_favorite: !currentStatus
+            });
+        } catch (error) {
+            toast({
+                title: "Error updating favorite status",
                 description: error.message,
                 variant: "destructive",
             });
@@ -116,7 +148,10 @@ export function useMealTemplates() {
                 user_id: user.uid,
                 created_at: serverTimestamp(),
             });
-            toast({ title: "Meal plan saved successfully!" });
+            toast({
+                description: "Meal plan saved successfully!",
+                });
+           
         } catch (error) {
             toast({
                 title: "Error saving meal plan",
@@ -129,10 +164,42 @@ export function useMealTemplates() {
     const deletePlan = async (id) => {
         try {
             await deleteDoc(doc(db, "meal_plans", id));
-            toast({ title: "Meal plan deleted" });
+             toast({
+                description: "Meal plan deleted!",
+                });
+            
         } catch (error) {
             toast({
                 title: "Error deleting meal plan",
+                description: error.message,
+                variant: "destructive",
+            });
+        }
+    };
+
+    const updatePlan = async (id, updatedData) => {
+        try {
+            await updateDoc(doc(db, "meal_plans", id), updatedData);
+            toast({
+                description: "Meal plan synced successfully!",
+            });
+        } catch (error) {
+            toast({
+                title: "Error syncing meal plan",
+                description: error.message,
+                variant: "destructive",
+            });
+        }
+    };
+
+    const togglePlanFavorite = async (id, currentStatus) => {
+        try {
+            await updateDoc(doc(db, "meal_plans", id), {
+                is_favorite: !currentStatus
+            });
+        } catch (error) {
+            toast({
+                title: "Error updating favorite status",
                 description: error.message,
                 variant: "destructive",
             });
@@ -144,8 +211,12 @@ export function useMealTemplates() {
         plans,
         loading,
         addTemplate,
+        updateTemplate,
         deleteTemplate,
+        toggleTemplateFavorite,
         addPlan,
+        updatePlan,
         deletePlan,
+        togglePlanFavorite,
     };
 }

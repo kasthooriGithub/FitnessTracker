@@ -66,7 +66,9 @@ export function useNutrition(selectedDate = new Date().toISOString().split("T")[
                 entry_date: selectedDate,
                 created_at: serverTimestamp(),
             });
-            toast({ title: "Entry added successfully!" });
+            toast({
+                description: "Entry added successfully!",
+                });
         } catch (error) {
             toast({
                 title: "Error adding entry",

@@ -5,14 +5,28 @@ import { MacroRing } from "../components/MacroRing";
 import { MealCard } from "../components/MealCard";
 import { AddFoodDialog } from "../components/AddFoodDialog";
 import { MealTemplatesModal } from "../components/MealTemplatesModal";
-import { Plus, Heart, Utensils, Activity, Loader2 } from "lucide-react";
+import { Plus, Heart, Utensils, Activity, Loader2, Coffee, Sun, Moon, Apple } from "lucide-react";
+import { Modal } from "react-bootstrap";
 
 export default function Nutrition() {
     const { profile, loading: profileLoading } = useProfile();
     const { meals, totals, loading: nutritionLoading, addEntry, deleteEntry } = useNutrition();
     const [showAddModal, setShowAddModal] = useState(false);
     const [showTemplatesModal, setShowTemplatesModal] = useState(false);
-    const [selectedMeal, setSelectedMeal] = useState("Breakfast");
+    const [showMealSelectModal, setShowMealSelectModal] = useState(false);
+    
+    // Remember last selected meal using lazy initialization
+    const [lastSelectedMeal, setLastSelectedMeal] = useState(() => {
+        return localStorage.getItem("lastSelectedMeal") || "Breakfast";
+    });
+    const [selectedMeal, setSelectedMeal] = useState(lastSelectedMeal);
+
+    const mealCategories = [
+        { name: "Breakfast", icon: Coffee, desc: "Morning fuel" },
+        { name: "Lunch", icon: Sun, desc: "Midday energy" },
+        { name: "Dinner", icon: Moon, desc: "Evening meal" },
+        { name: "Snacks", icon: Apple, desc: "Quick bites" },
+    ];
 
     const calorieGoal = profile?.daily_calories_goal || 2000;
     const proteinGoal = profile?.protein_goal || 150;
@@ -24,6 +38,13 @@ export default function Nutrition() {
     const handleOpenAdd = (mealType) => {
         setSelectedMeal(mealType);
         setShowAddModal(true);
+    };
+
+    const handleMealSelect = (mealName) => {
+        setLastSelectedMeal(mealName);
+        localStorage.setItem("lastSelectedMeal", mealName);
+        setShowMealSelectModal(false);
+        handleOpenAdd(mealName);
     };
 
     const handleAddSubmit = async (foodData) => {
@@ -49,7 +70,7 @@ export default function Nutrition() {
                     </button>
                     <button
                         className="btn btn-primary rounded-3 px-3 py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm flex-grow-1 flex-md-grow-0"
-                        onClick={() => handleOpenAdd("Breakfast")}
+                        onClick={() => setShowMealSelectModal(true)}
                     >
                         <Plus size={20} />
                         Add Food
@@ -94,7 +115,7 @@ export default function Nutrition() {
             {/* Meals section */}
             <div className="row">
                 <div className="col-12">
-                    {["Breakfast", "Lunch", "Dinner"].map((mealType) => (
+                    {["Breakfast", "Lunch", "Dinner", "Snacks"].map((mealType) => (
                         <MealCard
                             key={mealType}
                             title={mealType}
@@ -106,7 +127,6 @@ export default function Nutrition() {
                 </div>
             </div>
 
-            {/* Basic Add Food Modal (Bootstrap style) */}
             {/* Smart Add Food Modal */}
             <AddFoodDialog
                 show={showAddModal}
@@ -119,6 +139,52 @@ export default function Nutrition() {
                 show={showTemplatesModal} 
                 onHide={() => setShowTemplatesModal(false)} 
             />
+
+            {/* Meal Selection Modal */}
+            <Modal show={showMealSelectModal} onHide={() => setShowMealSelectModal(false)} centered scrollable>
+                <Modal.Header closeButton className="border-0 pb-0">
+                    <Modal.Title className="fw-bold d-flex align-items-center gap-2">
+                        <Utensils className="text-primary" size={24} />
+                        When did you eat?
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body className="pt-2 pb-4 px-4">
+                    <p className="text-muted mb-4 small">Select a meal category to log your food.</p>
+                    <div className="d-flex flex-column gap-3">
+                        {mealCategories.map((cat) => {
+                            const Icon = cat.icon;
+                            const isSelected = lastSelectedMeal === cat.name;
+                            return (
+                                <div 
+                                    key={cat.name}
+                                    onClick={() => handleMealSelect(cat.name)}
+                                    className={`d-flex align-items-center p-3 rounded-4 transition-all border ${isSelected ? 'bg-primary text-white border-primary shadow-sm' : 'bg-light border-light-subtle text-dark'}`}
+                                    style={{ cursor: "pointer", transition: "all 0.2s ease" }}
+                                    onMouseOver={(e) => {
+                                        if(!isSelected) e.currentTarget.style.transform = 'translateY(-2px)';
+                                    }}
+                                    onMouseOut={(e) => {
+                                        if(!isSelected) e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
+                                >
+                                    <div className={`p-3 rounded-circle d-flex align-items-center justify-content-center me-3 ${isSelected ? 'bg-white bg-opacity-25' : 'bg-white border shadow-sm'}`}>
+                                        <Icon size={24} className={isSelected ? 'text-white' : 'text-primary'} />
+                                    </div>
+                                    <div>
+                                        <h5 className="mb-0 fw-bold">{cat.name}</h5>
+                                        <small className={isSelected ? 'text-white text-opacity-75' : 'text-muted fw-medium'}>{cat.desc}</small>
+                                    </div>
+                                    {isSelected && (
+                                        <div className="ms-auto bg-white text-primary rounded-circle d-flex p-1 shadow-sm">
+                                            <Utensils size={14} />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </Modal.Body>
+            </Modal>
         </div>
     );
 }

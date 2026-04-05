@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Pencil, Trash2, Clock, Flame, Heart, Zap, Infinity } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -13,10 +14,24 @@ export function WorkoutCard({ workout, onEdit, onDelete }) {
   const categoryClass = workout.category || "other";
   const intensityClass = `badge-${workout.intensity || "medium"}`;
 
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick(t => t + 1);
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   const getTimeAgo = () => {
     try {
-      // If we have a timestamp or full date, use it. Otherwise use workout_date at start of day.
-      const date = new Date(workout.workout_date);
+      let date;
+      if (workout.createdAt) {
+        // Handle both Firestore Timestamp objects and standard Dates
+        date = workout.createdAt.toDate ? workout.createdAt.toDate() : new Date(workout.createdAt);
+      } else {
+        date = new Date(workout.workout_date);
+      }
       return formatDistanceToNow(date, { addSuffix: true });
     } catch (e) {
       return "";

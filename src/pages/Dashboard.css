@@ -127,6 +127,17 @@
     color: #8b5cf6;
 }
 
+@keyframes waterGoalGlow {
+    0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.6); }
+    100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.2); }
+}
+
+.water-goal-achieved {
+    animation: waterGoalGlow 2s ease-in-out infinite;
+    border-color: #3b82f6 !important;
+}
+
 @media (max-width: 768px) {
     .ring-grid {
         justify-content: center;

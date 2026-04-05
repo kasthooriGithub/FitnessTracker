@@ -91,7 +91,7 @@ export function useDailyLogs(dateRange = "alltime") {
           weight_kg: field === "weight_kg" ? value : null,
         });
       }
-
+      
       toast({ title: "Updated successfully!" });
     } catch (error) {
       toast({

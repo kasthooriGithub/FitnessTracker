@@ -8,7 +8,8 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  serverTimestamp
 } from "firebase/firestore";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../hooks/use-toast";
@@ -73,6 +74,8 @@ export function useWorkouts(dateRange = "alltime") {
       await addDoc(collection(db, "workouts"), {
         ...workout,
         user_id: user.uid,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
 
       toast({
@@ -92,7 +95,10 @@ export function useWorkouts(dateRange = "alltime") {
     try {
       const workoutRef = doc(db, "workouts", workout.id);
       const { id, ...data } = workout;
-      await updateDoc(workoutRef, data);
+      await updateDoc(workoutRef, {
+        ...data,
+        updatedAt: serverTimestamp()
+      });
 
       toast({
         title: "Workout updated!",

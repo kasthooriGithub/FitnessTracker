@@ -1,9 +1,18 @@
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useProfile } from "../hooks/useProfile";
 import { useWorkouts } from "../hooks/useWorkouts";
-import { Dumbbell, User, Target, Footprints, Flame, Droplets, Save, LogOut, Activity } from "lucide-react";
+import {
+  Dumbbell,
+  User,
+  Target,
+  Footprints,
+  Flame,
+  Droplets,
+  Save,
+  LogOut,
+  Activity,
+} from "lucide-react";
 import { useToast } from "../hooks/use-toast";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 
@@ -28,7 +37,6 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [showSignout, setShowSignout] = useState(false);
 
-  // Correct: Update form when profile loads
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name || "");
@@ -73,6 +81,7 @@ export default function Profile() {
 
     setSaving(false);
     setIsEditing(false);
+
     toast({
       title: "Profile Updated",
       description: "Your settings have been saved successfully.",
@@ -84,34 +93,46 @@ export default function Profile() {
     await signOut();
   };
 
-  // Calculate weekly workout counts
-  const last7Days = [...Array(7)].map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    return d.toISOString().split("T")[0];
-  }).reverse();
+  const last7Days = [...Array(7)]
+    .map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      return d.toISOString().split("T")[0];
+    })
+    .reverse();
 
-  const weeklyData = last7Days.map(date => {
-    const count = workouts.filter(w => w.workout_date === date).length;
-    const dayName = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
+  const weeklyData = last7Days.map((date) => {
+    const count = workouts.filter((w) => w.workout_date === date).length;
+    const dayName = new Date(date).toLocaleDateString("en-US", { weekday: "short" });
     return { dayName, count };
   });
 
-  const maxWorkouts = Math.max(...weeklyData.map(d => d.count), 1);
+  const maxWorkouts = Math.max(...weeklyData.map((d) => d.count), 1);
+
+  const getLockedFieldProps = () => {
+    if (!isEditing) {
+      return {
+        title: "Please click Edit button. After that you can edit this field.",
+        style: { backgroundColor: "#f9fafb", cursor: "not-allowed" },
+      };
+    }
+    return {
+      title: "",
+      style: {},
+    };
+  };
+
+  const lockedFieldProps = getLockedFieldProps();
 
   return (
     <div className="page-container">
-
-      {/* Header */}
       <div className="mb-3">
         <h1 className="display-5 fw-bold mb-0">Profile</h1>
         <p className="muted fw-medium mb-0">Manage your account and fitness goals</p>
       </div>
 
       <div className="row g-4">
-        {/* Left Column: Progress & Goals */}
         <div className="col-12 col-lg-7 d-flex flex-column gap-4">
-          {/* Weekly Progress Visualization */}
           <div className="card-soft h-100">
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center gap-3">
@@ -124,7 +145,11 @@ export default function Profile() {
                 </div>
               </div>
             </div>
-            <div className="d-flex align-items-end justify-content-between gap-2 pt-2" style={{ height: 150 }}>
+
+            <div
+              className="d-flex align-items-end justify-content-between gap-2 pt-2"
+              style={{ height: 150 }}
+            >
               {weeklyData.map((d, i) => (
                 <div key={i} className="flex-grow-1 d-flex flex-column align-items-center gap-2">
                   <div
@@ -133,16 +158,20 @@ export default function Profile() {
                   >
                     <div
                       className="position-absolute bottom-0 start-0 end-0 bg-primary opacity-75 transition-all"
-                      style={{ height: `${(d.count / maxWorkouts) * 100}%`, minHeight: d.count > 0 ? '10%' : '0' }}
+                      style={{
+                        height: `${(d.count / maxWorkouts) * 100}%`,
+                        minHeight: d.count > 0 ? "10%" : "0",
+                      }}
                     />
                   </div>
-                  <span className="small text-muted fw-bold" style={{ fontSize: '0.65rem' }}>{d.dayName}</span>
+                  <span className="small text-muted fw-bold" style={{ fontSize: "0.65rem" }}>
+                    {d.dayName}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Fitness Goals */}
           <div className="card-soft">
             <div className="d-flex align-items-center gap-3 mb-4">
               <div className="icon-square bg-success-soft">
@@ -156,7 +185,10 @@ export default function Profile() {
 
             <div className="row g-3">
               <div className="col-12 col-md-6">
-                <div className="d-flex align-items-center gap-2 mb-2">
+                <div
+                  className="d-flex align-items-center gap-2 mb-2"
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                >
                   <Footprints size={18} className="text-primary" />
                   <label className="form-label small fw-bold mb-0">Steps</label>
                 </div>
@@ -167,12 +199,16 @@ export default function Profile() {
                   onChange={(e) => setStepsGoal(e.target.value)}
                   placeholder="10000"
                   readOnly={!isEditing}
-                  style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                  style={lockedFieldProps.style}
                 />
               </div>
 
               <div className="col-12 col-md-6">
-                <div className="d-flex align-items-center gap-2 mb-2">
+                <div
+                  className="d-flex align-items-center gap-2 mb-2"
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                >
                   <Flame size={18} className="text-danger" />
                   <label className="form-label small fw-bold mb-0">Calories</label>
                 </div>
@@ -183,12 +219,16 @@ export default function Profile() {
                   onChange={(e) => setCaloriesGoal(e.target.value)}
                   placeholder="500"
                   readOnly={!isEditing}
-                  style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                  style={lockedFieldProps.style}
                 />
               </div>
 
               <div className="col-12 col-md-6">
-                <div className="d-flex align-items-center gap-2 mb-2">
+                <div
+                  className="d-flex align-items-center gap-2 mb-2"
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                >
                   <Droplets size={18} className="text-info" />
                   <label className="form-label small fw-bold mb-0">Water (ml)</label>
                 </div>
@@ -199,12 +239,16 @@ export default function Profile() {
                   onChange={(e) => setWaterGoal(e.target.value)}
                   placeholder="2500"
                   readOnly={!isEditing}
-                  style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                  style={lockedFieldProps.style}
                 />
               </div>
 
               <div className="col-12 col-md-6">
-                <div className="d-flex align-items-center gap-2 mb-2">
+                <div
+                  className="d-flex align-items-center gap-2 mb-2"
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                >
                   <Dumbbell size={18} className="text-primary" />
                   <label className="form-label small fw-bold mb-0">Weekly Workout Target</label>
                 </div>
@@ -215,16 +259,15 @@ export default function Profile() {
                   onChange={(e) => setWorkoutGoal(e.target.value)}
                   placeholder="5"
                   readOnly={!isEditing}
-                  style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                  style={lockedFieldProps.style}
                 />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Info & Motivation */}
         <div className="col-12 col-lg-5 d-flex flex-column gap-4">
-          {/* Personal Info */}
           <div className="card-soft">
             <div className="d-flex align-items-center justify-content-between mb-4">
               <div className="d-flex align-items-center gap-3">
@@ -236,13 +279,20 @@ export default function Profile() {
                   <p className="muted mb-0">Basic details</p>
                 </div>
               </div>
+
               <button
-                className={`btn btn-sm ${isEditing ? 'btn-light' : 'btn-outline-primary'}`}
+                className={`btn btn-sm ${isEditing ? "btn-light" : "btn-outline-primary"}`}
                 onClick={() => setIsEditing(!isEditing)}
               >
                 {isEditing ? "Cancel" : "Edit"}
               </button>
             </div>
+
+            {!isEditing && (
+              <div className="alert alert-light border small mb-4 py-2 px-3">
+                Please click <strong>Edit</strong> button. After that you can edit the profile fields.
+              </div>
+            )}
 
             <div className="d-flex flex-column gap-3">
               <div className="form-group">
@@ -253,7 +303,8 @@ export default function Profile() {
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Alex Johnson"
                   readOnly={!isEditing}
-                  style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                  title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                  style={lockedFieldProps.style}
                 />
               </div>
 
@@ -261,8 +312,8 @@ export default function Profile() {
                 <label className="form-label small fw-bold">Email (Read-only)</label>
                 <input
                   className="form-control input-modern"
-                  style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
-                  value={user.email || ""}
+                  style={{ backgroundColor: "#f3f4f6", cursor: "not-allowed" }}
+                  value={user?.email || ""}
                   disabled
                 />
               </div>
@@ -277,24 +328,30 @@ export default function Profile() {
                     onChange={(e) => setWeightKg(e.target.value)}
                     placeholder="70"
                     readOnly={!isEditing}
-                    style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                    title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                    style={lockedFieldProps.style}
                   />
                 </div>
 
                 <div className="col-6">
                   <label className="form-label small fw-bold">Fitness Goal</label>
-                  <select
-                    className="form-control input-modern"
-                    value={goal}
-                    onChange={(e) => setGoal(e.target.value)}
-                    disabled={!isEditing}
-                    style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                  <div
+                    title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
                   >
-                    <option value="">Select goal...</option>
-                    <option value="lose">Lose Weight</option>
-                    <option value="gain">Gain Weight</option>
-                    <option value="maintain">Maintain Weight</option>
-                  </select>
+                    <select
+                      className="form-select input-modern"
+                      value={goal}
+                      onChange={(e) => setGoal(e.target.value)}
+                      disabled={!isEditing}
+                      title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                      style={lockedFieldProps.style}
+                    >
+                      <option value="">Select goal...</option>
+                      <option value="lose">Lose Weight</option>
+                      <option value="gain">Gain Weight</option>
+                      <option value="maintain">Maintain Weight</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -308,7 +365,8 @@ export default function Profile() {
                     onChange={(e) => setHeightCm(e.target.value)}
                     placeholder="175"
                     readOnly={!isEditing}
-                    style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                    title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                    style={lockedFieldProps.style}
                   />
                 </div>
 
@@ -321,14 +379,14 @@ export default function Profile() {
                     onChange={(e) => setWeightGoal(e.target.value)}
                     placeholder="70"
                     readOnly={!isEditing}
-                    style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+                    title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+                    style={lockedFieldProps.style}
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Motivation Card */}
           <div className="card-soft">
             <div className="d-flex align-items-center gap-3 mb-4">
               <div className="icon-square bg-info-soft">
@@ -339,6 +397,7 @@ export default function Profile() {
                 <p className="muted mb-0">Your fitness drive</p>
               </div>
             </div>
+
             <textarea
               className="form-control input-modern"
               rows="3"
@@ -346,11 +405,11 @@ export default function Profile() {
               onChange={(e) => setMotivation(e.target.value)}
               placeholder="e.g. Training for my first 5k!"
               readOnly={!isEditing}
-              style={!isEditing ? { backgroundColor: '#f9fafb', cursor: 'default' } : {}}
+              title={!isEditing ? "Please click Edit button. After that you can edit this field." : ""}
+              style={lockedFieldProps.style}
             />
           </div>
 
-          {/* Actions */}
           <div className="d-flex flex-column gap-2">
             {isEditing && (
               <button

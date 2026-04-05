@@ -14,6 +14,7 @@ import { useProfile } from "../hooks/useProfile";
 import { useNutrition } from "../hooks/useNutrition";
 import { DailyFitnessSummary } from "../components/DailyFitnessSummary";
 import { Footprints, Flame, Plus, Dumbbell, Activity } from "lucide-react";
+import { Modal, Button } from "react-bootstrap";
 
 import "./Dashboard.css";
 
@@ -30,6 +31,30 @@ export default function Dashboard() {
   const [workoutDialogOpen, setWorkoutDialogOpen] = useState(false);
   const [editingWorkout, setEditingWorkout] = useState(null);
   const [showBMISetup, setShowBMISetup] = useState(false);
+  const [showWaterModal, setShowWaterModal] = useState(false);
+
+  // Water Goal Celebration
+  const dailyWaterGoal = profile?.daily_water_goal_ml || 2000;
+  const currentWater = todayLog?.water_ml || 0;
+  const isWaterGoalMet = currentWater >= dailyWaterGoal && dailyWaterGoal > 0;
+
+  useEffect(() => {
+    if (!profile || !todayLog) return;
+    
+    // Get today's local date string
+    const todayStr = new Date().toLocaleDateString();
+    const lastCelebrated = localStorage.getItem("water_celebrated_date_v2");
+
+    // If water goes below the goal, we reset the celebration memory so they can trigger it again today!
+    if (!isWaterGoalMet && lastCelebrated === todayStr) {
+      localStorage.removeItem("water_celebrated_date_v2");
+    }
+
+    if (isWaterGoalMet && lastCelebrated !== todayStr) {
+      setShowWaterModal(true); // Open big modal
+      localStorage.setItem("water_celebrated_date_v2", todayStr);
+    }
+  }, [currentWater, dailyWaterGoal, profile, todayLog, isWaterGoalMet]);
 
   // Check if profile needs setup (missing height, weight, age, or calculations)
   useEffect(() => {
@@ -154,7 +179,7 @@ export default function Dashboard() {
       {/* Manual Tracking Row */}
       <div className="row g-4 mb-5">
         <div className="col-12 col-md-6">
-          <div className="card-soft h-100">
+          <div className={`card-soft h-100 ${isWaterGoalMet ? 'water-goal-achieved' : ''}`}>
             <div className="d-flex align-items-start mb-4">
               <div className="icon-square bg-water-soft">
                 <Activity size={20} />
@@ -262,6 +287,23 @@ export default function Dashboard() {
         onSave={handleSaveProfileData}
         profile={profile}
       />
+
+      <Modal show={showWaterModal} onHide={() => setShowWaterModal(false)} centered className="border-0 shadow-lg">
+        <Modal.Body className="text-center p-5 rounded-4 shadow-lg" style={{ background: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)" }}>
+          <div className="mb-4">
+            <span style={{ fontSize: "6rem" }}>🎉</span>
+          </div>
+          <h2 className="display-6 fw-bold mb-3" style={{ color: "#0369a1" }}>Congratulations!</h2>
+          <p className="lead mb-4" style={{ color: "#0c4a6e" }}>
+            You reached your daily <strong>{(dailyWaterGoal / 1000).toFixed(1)}L</strong> water goal 💧
+            <br />
+            Excellent work staying hydrated today!
+          </p>
+          <Button variant="primary" size="lg" className="rounded-pill px-5 py-3 fw-bold shadow mt-2" onClick={() => setShowWaterModal(false)}>
+            Awesome!
+          </Button>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 }
