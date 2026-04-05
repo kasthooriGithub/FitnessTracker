@@ -65,7 +65,7 @@ export function useWorkouts(dateRange = "alltime") {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, dateRange]);
 
   const addWorkout = async (workout) => {
     if (!user) return;

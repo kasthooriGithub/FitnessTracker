@@ -32,6 +32,7 @@ export default function Dashboard() {
   const [editingWorkout, setEditingWorkout] = useState(null);
   const [showBMISetup, setShowBMISetup] = useState(false);
   const [showWaterModal, setShowWaterModal] = useState(false);
+  const [stepsInput, setStepsInput] = useState("");
 
   // Water Goal Celebration
   const dailyWaterGoal = profile?.daily_water_goal_ml || 2000;
@@ -57,6 +58,12 @@ export default function Dashboard() {
   }, [currentWater, dailyWaterGoal, profile, todayLog, isWaterGoalMet]);
 
   // Check if profile needs setup (missing height, weight, age, or calculations)
+  useEffect(() => {
+    if (todayLog?.steps !== undefined) {
+      setStepsInput(todayLog.steps.toString());
+    }
+  }, [todayLog?.steps]);
+
   useEffect(() => {
     if (!profile) return;
 
@@ -227,8 +234,14 @@ export default function Dashboard() {
               <input
                 type="number"
                 className="form-control input-modern"
-                value={todayLog?.steps || ""}
-                onChange={(e) => updateLog("steps", parseInt(e.target.value) || 0)}
+                value={stepsInput}
+                onChange={(e) => setStepsInput(e.target.value)}
+                onBlur={(e) => {
+                  const val = parseInt(e.target.value) || 0;
+                  if (val !== (todayLog?.steps || 0)) {
+                    updateLog("steps", val);
+                  }
+                }}
                 placeholder="7234"
               />
               <button

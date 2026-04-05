@@ -6,7 +6,7 @@ export function useToast() {
   const toast = (props) => {
     const { title, description, variant } = props;
     const type = variant === "destructive" ? "danger" : "success";
-    showAlert(description || title, type, title);
+    showAlert(description || title, type, description ? title : "");
 
     return {
       id: Math.random().toString(),

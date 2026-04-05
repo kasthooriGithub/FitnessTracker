@@ -5,6 +5,7 @@ import { useDailyLogs } from "../hooks/useDailyLogs";
 import { useWorkouts } from "../hooks/useWorkouts";
 import { useNutritionHistory } from "../hooks/useNutrition";
 import { DateFilter } from "../components/DateFilter";
+import { getStartDateString } from "../utils/dateFilters";
 import { Dumbbell, Footprints, Droplets, Scale, Flame, Activity, Clock, Calendar } from "lucide-react";
 import {
   LineChart,
@@ -27,28 +28,21 @@ export default function History() {
   const { history: nutritionHistory, loading: nutritionLoading } = useNutritionHistory(dateRange);
 
   // --- Filtering Logic ---
-  const getDateThreshold = () => {
-    const date = new Date();
-    date.setHours(0, 0, 0, 0); // Start of day for precise comparisons
-    if (dateRange === "today") return date;
-    if (dateRange === "7days") date.setDate(date.getDate() - 7);
-    if (dateRange === "30days") date.setDate(date.getDate() - 30);
-    if (dateRange === "3months") date.setDate(date.getDate() - 90);
-    if (dateRange === "1year") date.setDate(date.getDate() - 365);
-    if (dateRange === "alltime") return new Date(0); // The beginning of time
-    return date;
-  };
+  const startDate = useMemo(() => getStartDateString(dateRange), [dateRange]);
 
   const filterByDate = (itemDateString) => {
-    const itemDate = new Date(itemDateString);
     const todayStr = new Date().toISOString().split('T')[0];
-    const threshold = getDateThreshold();
 
     if (dateRange === "today") {
       return itemDateString === todayStr;
     }
-    // For ranges, we want items AFTER the threshold
-    return itemDate >= threshold;
+    
+    if (dateRange === "alltime" || !startDate) {
+      return true;
+    }
+
+    // Direct string comparison is safe for YYYY-MM-DD format
+    return itemDateString >= startDate;
   };
 
   // Filtered Data

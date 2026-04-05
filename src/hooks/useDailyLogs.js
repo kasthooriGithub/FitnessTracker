@@ -70,7 +70,7 @@ export function useDailyLogs(dateRange = "alltime") {
     });
 
     return () => unsubscribe();
-  }, [user]);
+  }, [user, dateRange]);
 
   const updateLog = async (field, value) => {
     if (!user) return;

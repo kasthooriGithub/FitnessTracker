@@ -161,7 +161,7 @@ export function useNutritionHistory(dateRange = "alltime") {
         });
 
         return () => unsubscribe();
-    }, [user]);
+    }, [user, dateRange]);
 
     return { history, loading };
 }
