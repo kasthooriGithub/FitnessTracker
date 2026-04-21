@@ -2,10 +2,46 @@
 
 A modern React application built using Vite, JavaScript, and Bootstrap.
 
+## 🌐 Live Demo
+
+🚀 Try the app here:  
+[https://your-vercel-link.vercel.app](https://own-portfolio-red.vercel.app/)
+
 ## Project info
 
 This application is designed as a fitness tracking platform.
 
+## 🚀 Features
+
+- 🔐 User Authentication (Firebase)
+- 📊 Dashboard Overview
+- 🍽️ Nutrition Tracking
+- 🏃 Workout Tracking
+- 📈 Progress & History Tracking
+- ⚖️ Weight Monitoring
+- 💧 Water Intake Tracking
+- 👤 User Profile Management
+
+---
+
+## 📊 Progress Filtering (Recent Update)
+
+The **Progress page** now supports dynamic time-based filtering:
+
+- Today  
+- 7 Days  
+- 30 Days  
+- 3 Months  
+- 1 Year  
+- All Time  
+
+### ✅ Behavior
+
+- Updates **summary cards dynamically**
+- Updates **charts based on selected range**
+- Shows only **filtered data**
+
+---
 ## Technologies Used
 
 This project is built with:
@@ -16,6 +52,7 @@ This project is built with:
 - Bootstrap
 - React-Bootstrap
 - Firebase
+
 
 ## How to Run Locally
 
