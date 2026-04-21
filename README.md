@@ -5,7 +5,7 @@ A modern React application built using Vite, JavaScript, and Bootstrap.
 ## 🌐 Live Demo
 
 🚀 Try the app here:  
-[https://your-vercel-link.vercel.app](https://own-portfolio-red.vercel.app/)
+[[https://your-vercel-link.vercel.app](https://fitness-tracker-blond-five.vercel.app/)
 
 ## Project info
 
